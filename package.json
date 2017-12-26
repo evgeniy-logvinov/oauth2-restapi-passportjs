@@ -1,0 +1,27 @@
+{
+  "name": "oauth2-restapi-passportjs",
+  "version": "1.0.0",
+  "description": "oauth2 with passportjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "nd": "nodemon server.js",
+    "ni": "node-debug server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evgeniy-logvinov/oauth2-restapi-passportjs.git"
+  },
+  "author": "eklogvinov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evgeniy-logvinov/oauth2-restapi-passportjs/issues"
+  },
+  "homepage": "https://github.com/evgeniy-logvinov/oauth2-restapi-passportjs#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^4.13.7"
+  }
+}
