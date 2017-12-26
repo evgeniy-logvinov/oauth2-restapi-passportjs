@@ -7,6 +7,7 @@ var productController = require('./controllers/product');
 var userController = require('./controllers/user');
 var passport = require('passport');
 var authController = require('./controllers/auth');
+var clientController = require('./controllers/client');
 
 // Connect to the productBasket MongoDB
 mongoose.connect(dbConfig.url);
@@ -52,6 +53,11 @@ router.route('/users')
     .post(userController.postUsers)
     .get(authController.isAuthenticated, userController.getUsers);
 
+// Create endpoint handlers for /clients
+router.route('/clients')
+    .post(authController.isAuthenticated, clientController.postClients)
+    .get(authController.isAuthenticated, clientController.getClients);
+    
 // Register all our routes with /api
 app.use('/api', router);
 
