@@ -3,7 +3,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var dbConfig = require('./db');
 var bodyParser = require('body-parser');
-var Product = require('./models/product');
+var productController = require('./controllers/product');
+var userController = require('./controllers/user');
 
 // Connect to the productBasket MongoDB
 mongoose.connect(dbConfig.url);
@@ -31,85 +32,20 @@ router.get('/', function (req, res) {
 });
 
 // Create a new route with the prefix /products
-var productsRoute = router.route('/products');
-
-// Create endpoint /api/products for POSTS
-productsRoute.post(function (req, res) {
-    // Create a new instance of the Product model
-    var product = new Product();
-
-    // Set the product properties that came from the POST data
-    product.name = req.body.name;
-    product.type = req.body.type;
-    product.cost = req.body.cost;
-
-    // Save the product and check for errors
-    product.save(function (err) {
-        if (err)
-            res.send(err);
-
-        res.json({
-            message: 'Product added to the basket!',
-            data: product
-        });
-    });
-});
-
-// Create endpoint /api/products for GET
-productsRoute.get(function (req, res) {
-    // Use the Product model to find all product
-    Product.find(function (err, products) {
-        if (err)
-            res.send(err);
-
-        res.json(products);
-    });
-});
+var productsRoute = router.route('/products')
+    .post(productController.postProducts)
+    .get(productController.getProducts);
 
 // Create a new route with the /products/:product_id prefix
-var productRoute = router.route('/products/:product_id');
+var productRoute = router.route('/products/:product_id')
+    .get(productController.getPproduct)
+    .put(productController.putProduct)
+    .delete(productController.deleteProduct);
 
-// Create endpoint /api/products/:product_id for GET
-productRoute.get(function (req, res) {
-    // Use the Product model to find a specific product
-    Product.findById(req.params.product_id, function (err, product) {
-        if (err)
-            res.send(err);
-
-        res.json(product);
-    });
-});
-
-// Create endpoint /api/products/:product_id for PUT
-productRoute.put(function (req, res) {
-    // Use the Product model to find a specific product
-    Product.findById(req.params.product_id, function (err, product) {
-        if (err)
-            res.send(err);
-
-        // Update the existing product cost
-        product.cost = req.body.cost;
-
-        // Save the product and check for errors
-        product.save(function (err) {
-            if (err)
-                res.send(err);
-
-            res.json(product);
-        });
-    });
-});
-
-// Create endpoint /api/products/:product_id for DELETE
-productRoute.delete(function(req, res) {
-    // Use the Product model to find a specific product and remove it
-    Product.findByIdAndRemove(req.params.product_id, function(err) {
-      if (err)
-        res.send(err);
-  
-      res.json({ message: 'Product removed from the basket!' });
-    });
-  });
+// Create endpoint handlers for /users
+var usersRoute = router.route('/users')
+    .get(userController.getUsers)
+    .post(userController.postUsers);
 
 // Register all our routes with /api
 app.use('/api', router);
