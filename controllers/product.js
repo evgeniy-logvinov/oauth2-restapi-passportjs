@@ -9,6 +9,7 @@ exports.postProducts = function (req, res) {
     product.name = req.body.name;
     product.type = req.body.type;
     product.cost = req.body.cost;
+    product.userId = req.user._id;
 
     // Save the product and check for errors
     product.save(function (err) {
@@ -25,7 +26,9 @@ exports.postProducts = function (req, res) {
 // Create endpoint /api/products for GET
 exports.getProducts = function (req, res) {
     // Use the Product model to find all product
-    Product.find(function (err, products) {
+    Product.find({
+        userId: req.user._id
+    }, function (err, products) {
         if (err)
             res.send(err);
 
@@ -37,7 +40,10 @@ exports.getProducts = function (req, res) {
 // Create endpoint /api/products/:product_id for GET
 exports.getPproduct = function (req, res) {
     // Use the Product model to find a specific product
-    Product.findById(req.params.product_id, function (err, product) {
+    Product.find({
+        userId: req.user._id,
+        _id: req.params.product_id
+    }, function (err, product) {
         if (err)
             res.send(err);
 
@@ -48,19 +54,17 @@ exports.getPproduct = function (req, res) {
 // Create endpoint /api/products/:product_id for PUT
 exports.putProduct = function (req, res) {
     // Use the Product model to find a specific product
-    Product.findById(req.params.product_id, function (err, product) {
+    Product.update({
+        userId: req.user._id,
+        _id: req.params.product_id
+    }, {
+        cost: req.body.cost
+    }, function (err, num, raw) {
         if (err)
             res.send(err);
 
-        // Update the existing product cost
-        product.cost = req.body.cost;
-
-        // Save the product and check for errors
-        product.save(function (err) {
-            if (err)
-                res.send(err);
-
-            res.json(product);
+        res.json({
+            message: num + ' updated'
         });
     });
 };
@@ -68,7 +72,10 @@ exports.putProduct = function (req, res) {
 // Create endpoint /api/products/:product_id for DELETE
 exports.deleteProduct = function (req, res) {
     // Use the Product model to find a specific product and remove it
-    Product.findByIdAndRemove(req.params.product_id, function (err) {
+    Product.remove({
+        userId: req.user._id,
+        _id: req.params.product_id
+    }, function (err) {
         if (err)
             res.send(err);
 

@@ -5,6 +5,8 @@ var dbConfig = require('./db');
 var bodyParser = require('body-parser');
 var productController = require('./controllers/product');
 var userController = require('./controllers/user');
+var passport = require('passport');
+var authController = require('./controllers/auth');
 
 // Connect to the productBasket MongoDB
 mongoose.connect(dbConfig.url);
@@ -16,6 +18,9 @@ var app = express();
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+// Use the passport package in our application
+app.use(passport.initialize());
 
 // Use environment defined port or 3000
 var port = process.env.PORT || 3000;
@@ -32,20 +37,20 @@ router.get('/', function (req, res) {
 });
 
 // Create a new route with the prefix /products
-var productsRoute = router.route('/products')
-    .post(productController.postProducts)
-    .get(productController.getProducts);
+router.route('/products')
+    .post(authController.isAuthenticated, productController.postProducts)
+    .get(authController.isAuthenticated, productController.getProducts);
 
 // Create a new route with the /products/:product_id prefix
-var productRoute = router.route('/products/:product_id')
-    .get(productController.getPproduct)
-    .put(productController.putProduct)
-    .delete(productController.deleteProduct);
+router.route('/products/:product_id')
+    .get(authController.isAuthenticated, productController.getPproduct)
+    .put(authController.isAuthenticated, productController.putProduct)
+    .delete(authController.isAuthenticated, productController.deleteProduct);
 
 // Create endpoint handlers for /users
-var usersRoute = router.route('/users')
-    .get(userController.getUsers)
-    .post(userController.postUsers);
+router.route('/users')
+    .post(userController.postUsers)
+    .get(authController.isAuthenticated, userController.getUsers);
 
 // Register all our routes with /api
 app.use('/api', router);
