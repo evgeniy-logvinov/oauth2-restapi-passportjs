@@ -8,12 +8,16 @@ var userController = require('./controllers/user');
 var passport = require('passport');
 var authController = require('./controllers/auth');
 var clientController = require('./controllers/client');
+var ejs = require('ejs');
 
 // Connect to the productBasket MongoDB
 mongoose.connect(dbConfig.url);
 
 // Create our Express application
 var app = express();
+
+// Set view engine to ejs
+app.set('view engine', 'ejs');
 
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({
@@ -57,7 +61,7 @@ router.route('/users')
 router.route('/clients')
     .post(authController.isAuthenticated, clientController.postClients)
     .get(authController.isAuthenticated, clientController.getClients);
-    
+
 // Register all our routes with /api
 app.use('/api', router);
 
